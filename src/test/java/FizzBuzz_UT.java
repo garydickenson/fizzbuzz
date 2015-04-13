@@ -17,10 +17,22 @@ public class FizzBuzz_UT {
         //System.out.println("Able to create");
 
     }
+/*
+    get Word list
+    get in int in word list hash keys
+    remove  key-String combo
+    set new key-String combo
+    test if maximum items set
+    report number of additional divisors that can be set.
+    test for zero, neg numbers, number 1
 
+
+    */
     @Test
     public void ableToEvaluate(){
         FizzBuzz fizzBuzz = new FizzBuzz();
-        fizzBuzz.evaluate(1);
+        int[] divisors = new int[] {3,5};
+        String evalResult = fizzBuzz.evaluate(15, divisors);
+        System.out.println("Result : " + evalResult);
     }
 }
