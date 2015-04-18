@@ -21,7 +21,7 @@ public class FizzBuzz_UT {
         }
         for (final int key : hm1.keySet()) {
             if (hm2.containsKey(key)) {
-                if(hm1.get(key) != hm2.get(key)){
+                if(!hm1.get(key).equals(hm2.get(key))){
                     return Boolean.FALSE;
                 }
             }
@@ -98,38 +98,41 @@ public class FizzBuzz_UT {
 
     @Test public void able_To_Get_Full_Divisor_List(){
         FizzBuzz fizzBuzz = new FizzBuzz();
-        TreeMap<Integer, String> divisor_Word_List = new TreeMap<>();
-        divisor_Word_List.put(3, "Fizz");
-        divisor_Word_List.put(5, "Buzz");
-        fizzBuzz.setDivisor_Word_List(divisor_Word_List);
-        TreeMap<Integer, String> divisor_Word_List = new TreeMap<>();
-        divisor_Word_List.put(35, "Fizz_Buzz");
-        assertTrue(this.compare_TreeMaps(divisor_Word_List, fizzBuzz.getFull_Divisor_List()));
+        TreeMap<Integer, String> Word_List = new TreeMap<>();
+        Word_List.put(3, "Fizz");
+        Word_List.put(5, "Buzz");
+        fizzBuzz.setDivisor_Word_List(Word_List);
+
+        Word_List.put(15, "Fizz-Buzz"); // do not add to fizzBuzz instance
+        assertTrue(this.compare_TreeMaps(Word_List, fizzBuzz.getFull_Divisor_List()));
 
         //Add some individual words and test again
         fizzBuzz.setDivisor_Word(11, "Pep");
-        divisor_Word_List.put(3 * 11, "Fizz_Pep");
-        divisor_Word_List.put(5 * 11, "Buzz_Pep");
-        assertTrue(this.compare_TreeMaps(divisor_Word_List, fizzBuzz.getFull_Divisor_List()));
+        Word_List.put(11, "Pep");
+        Word_List.put(3 * 11, "Fizz-Pep");
+        Word_List.put(5 * 11, "Buzz-Pep");
+        assertTrue(this.compare_TreeMaps(Word_List, fizzBuzz.getFull_Divisor_List()));
 
         fizzBuzz.setDivisor_Word(8, "Pop");
-        divisor_Word_List.put(3 * 8, "Fizz_Pop");
-        divisor_Word_List.put(5*8, "Buzz_Pop");
-        divisor_Word_List.put(11*8, "Pop_Buzz");
-        assertTrue(this.compare_TreeMaps(divisor_Word_List, fizzBuzz.getFull_Divisor_List()));
+        Word_List.put(8, "Pop");
+        Word_List.put(3 * 8, "Fizz-Pop");
+        Word_List.put(5*8, "Buzz-Pop");
+        Word_List.put(11*8, "Pop-Pep");
+        assertTrue(this.compare_TreeMaps(Word_List, fizzBuzz.getFull_Divisor_List()));
 
         fizzBuzz.setDivisor_Word(7, "Fuzz");
-        divisor_Word_List.put(3*7, "Fizz_Fuzz");
-        divisor_Word_List.put(5*7, "Buzz_Fuzz");
-        divisor_Word_List.put(8*7, "Fuzz_Buzz");
-        divisor_Word_List.put(11*7, "Pop_Fuzz");
-        assertTrue(this.compare_TreeMaps(divisor_Word_List, fizzBuzz.getFull_Divisor_List()));
+        Word_List.put(7, "Fuzz");
+        Word_List.put(3*7, "Fizz-Fuzz");
+        Word_List.put(5*7, "Buzz-Fuzz");
+        Word_List.put(8*7, "Fuzz-Pop");
+        Word_List.put(11*7, "Fuzz-Pep");
+        assertTrue(this.compare_TreeMaps(Word_List, fizzBuzz.getFull_Divisor_List()));
 
 
     }
     @Test public void able_To_Get_Divisor_Word(){
         FizzBuzz fizzBuzz = new FizzBuzz();
-        assertTrue("Buzz" == fizzBuzz.getDivisor_Word(5));
+        assertTrue(fizzBuzz.getDivisor_Word(5).equals("Buzz"));
     }
     @Test public void able_To_Get_Divisor_Word_List_Length(){
         FizzBuzz fizzBuzz = new FizzBuzz();
@@ -349,8 +352,6 @@ public class FizzBuzz_UT {
             k++;
             Word_List.put(j + fizzBuzz.getMin_Include_Word_key(), "Buzz2");
             fizzBuzz.setInclude_Word_List(Word_List);
-            int a =Word_List.size();
-            int b = fizzBuzz.get_Length_Include_Word_List();
             assertTrue(Word_List.size() == fizzBuzz.get_Length_Include_Word_List());
         }
         for (int j = k; j < fizzBuzz.getMax_Length_Include_Word_List(); j++) {
@@ -534,15 +535,127 @@ public class FizzBuzz_UT {
     public void ableToEvaluate() {
         FizzBuzz fizzBuzz = new FizzBuzz();
         TreeMap<Integer, String> test_Data = new TreeMap<>();
+        if(Boolean.TRUE) {
+            test_Data.put(1, "1");
+            test_Data.put(3, "Fizz");
+            test_Data.put(5, "Buzz");
+            test_Data.put(14, "14");
+            test_Data.put(15, "Fizz-Buzz");
+            for (final int key : test_Data.keySet()) {
+                System.out.print(key + " : " + test_Data.get(key));
+                String a = fizzBuzz.evaluate(key);
+                String b = test_Data.get(key);
+                assertTrue(fizzBuzz.evaluate(key).equals(test_Data.get(key)));
+                System.out.println("  Pass");
+            }
+        }
+        if(Boolean.TRUE) {
+            System.out.println("---------------------------------------");
+            // turn off divisor output
+            fizzBuzz.setOutput_On_Division(Boolean.FALSE);
+            test_Data.clear();
+            test_Data.put(1, "1");
+            test_Data.put(3, "3");
+            test_Data.put(5, "5");
+            test_Data.put(14, "14");
+            test_Data.put(15, "15");
+            for (final int key : test_Data.keySet()) {
+                System.out.print(key + " : " + test_Data.get(key));
+                String a = fizzBuzz.evaluate(key);
+                String b = test_Data.get(key);
+                assertTrue(fizzBuzz.evaluate(key).equals(test_Data.get(key)));
+                System.out.println("  Pass");
+            }
+        }
+        System.out.println("---------------------------------------");
+        // turn on output on include
+        fizzBuzz.setOutput_On_Include(Boolean.TRUE);
+        test_Data.clear();
         test_Data.put(1, "1");
-        test_Data.put(3, "Fizz");
-        test_Data.put(5, "Buzz");
-        test_Data.put(15, "14");
-        test_Data.put(15, "Fizz-Buzz");
+        test_Data.put(2, "Pip");
+        test_Data.put(3, "3");
+        test_Data.put(5, "Pop");
+        test_Data.put(15, "Pop");
+        test_Data.put(25, "Pip-Pop");
+
         for (final int key : test_Data.keySet()) {
-            System.out.print(key + " : " +test_Data.get(key));
-            assertTrue(fizzBuzz.evaluate(15).equals(test_Data.get(key)));
+            System.out.print(key + " : " + test_Data.get(key));
+            String a = fizzBuzz.evaluate(key);
+            String b = test_Data.get(key);
+            assertTrue(fizzBuzz.evaluate(key).equals(test_Data.get(key)));
             System.out.println("  Pass");
         }
+        System.out.println("---------------------------------------");
+        // output everything
+        fizzBuzz.setOutput_On_Division(Boolean.TRUE);
+        fizzBuzz.setOutput_On_Include(Boolean.TRUE);
+        test_Data.clear();
+        test_Data.put(1, "1");
+        test_Data.put(2, "Pip");
+        test_Data.put(   3, "Fizz");
+        test_Data.put(   5, "Buzz-Pop");
+        test_Data.put(  15, "Fizz-Buzz-Pop");
+        test_Data.put(  25, "Buzz-Pip-Pop");
+        test_Data.put(2235, "Fizz-Buzz-Pip-Pop");
+        for (final int key : test_Data.keySet()) {
+            assertTrue(fizzBuzz.evaluate(key).equals(test_Data.get(key)));
+        }
+        System.out.println("---------------------------------------");
+
+        // Change the divisor and include lists
+        test_Data.clear();
+        TreeMap<Integer, String> divisor_Word_List;
+        divisor_Word_List = new TreeMap<>();
+        divisor_Word_List.put(3, "Fizz");
+        divisor_Word_List.put(5, "Buzz");
+        divisor_Word_List.put(7, "Fuzz");
+        fizzBuzz.setDivisor_Word_List(divisor_Word_List);
+
+        TreeMap<Integer, String> include_Word_Map;
+        include_Word_Map = new TreeMap<>();
+        include_Word_Map.put(2, "Pip");
+        include_Word_Map.put(6, "Pop");
+        include_Word_Map.put(7, "Pup");
+        include_Word_Map.put(8, "Put");
+        fizzBuzz.setInclude_Word_List(include_Word_Map);
+
+
+//I was here need to set up the test data, it's late '
+        for (final int key : test_Data.keySet()) {
+            System.out.println("Key : " +key + " : Expected Results " + test_Data.get(key));
+            String a = fizzBuzz.evaluate(key);
+            System.out.println("Eval Results = " +a);
+//            System.out.println("      test_Data.put(" + key + ", " + a + ");");
+            String b = test_Data.get(key);
+//            System.out.println("  Pass");
+            System.out.println(" - - - - - - - - - - ");
+            assertTrue(fizzBuzz.evaluate(key).equals(test_Data.get(key)));
+        }
+        System.out.println("---------------------------------------");
+
+        test_Data.clear();
+        test_Data.put(1, "1");
+        test_Data.put(   2, "Pip");
+        test_Data.put(   3, "Fizz");
+        test_Data.put(   5, "Buzz");
+        test_Data.put(  14, "14");
+        test_Data.put(  25, "15");
+        test_Data.put( 115, "Fizz-Buzz");
+        test_Data.put( 215, "Fizz-Buzz-Pop");
+        test_Data.put( 335, "Pop");
+        test_Data.put(1825, "Buzz-Pip-Pop");
+        test_Data.put(2125, "Pip-Pop");
+        test_Data.put(2235, "Fizz-Buzz-Pip-Pop");
+        for (final int key : test_Data.keySet()) {
+//            System.out.print(key + " : " + test_Data.get(key));
+            String a = fizzBuzz.evaluate(key);
+//            System.out.println(a);
+            System.out.println("      test_Data.put(" + key + ", " + a + ");");
+//            String b = test_Data.get(key);
+//            assertTrue(fizzBuzz.evaluate(key).equals(test_Data.get(key)));
+//            System.out.println("  Pass");
+        }
+        System.out.println("---------------------------------------");
+
     }
 }

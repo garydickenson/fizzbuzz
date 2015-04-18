@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -19,8 +21,11 @@ public class FizzBuzz {
 
     public TreeMap<Integer, String> getDivisor_Word_List() {return this.divisor_Word_List;}
     public void setDivisor_Word_List(TreeMap<Integer, String> Word_List) {
+        if(null != this.divisor_Word_List) {
+            this.divisor_Word_List.clear();
+        }
         for (final int key : Word_List.keySet()) {
-            setDivisor_Word(key, Word_List.get(key));
+            this.setDivisor_Word(key, Word_List.get(key));
         }
     }
     public TreeMap<Integer, String> getInclude_Word_List() {return include_Word_List;}
@@ -63,6 +68,7 @@ public class FizzBuzz {
 
     public FizzBuzz() {
         this.divisor_Word_List = new TreeMap<>();
+        this.full_Divisor_List = new TreeMap<>();
         this.setDivisor_Word(3, "Fizz"); // user class methods to set divisor list so the multiplier list gets created as well
         this.setDivisor_Word(5, "Buzz");
         this.output_On_Division = Boolean.TRUE;
@@ -76,6 +82,8 @@ public class FizzBuzz {
                     Boolean output_On_Division,
                     TreeMap<Integer, String> include_Word_List,
                     Boolean output_On_Include) {
+        this.divisor_Word_List = new TreeMap<>();
+        this.full_Divisor_List = new TreeMap<>();
         this.setDivisor_Word_List(divisor_Word_List); // user class methods to set divisor list so the multiplier list gets created as well
         this.output_On_Division = output_On_Division;
         this.include_Word_List  = include_Word_List;
@@ -83,14 +91,22 @@ public class FizzBuzz {
     }
     private void generate_Divisor_list() {
         // create a Map of the multiples of the divisor list
-        this.full_Divisor_List.clear();
+        // add the initial list to the full List
         // go through the divisor list and generate the List that will be used during evaluation time
+        // take the first key, multiple all the other keys by it and add to full List
+        // get the next key, multiple the remaining keys. (skipping the first one) and add to list
+        // continue until all combinations have been computed, The words are the [lowest numeric value]_[highest numeric value]
 
-I was here about to generate the multiplier divisor_Word_List
+        this.full_Divisor_List = (TreeMap<Integer, String>)this.divisor_Word_List.clone();
+        List<Integer> key_list =  new ArrayList<Integer>(this.divisor_Word_List.keySet());
+        for (int i = 0; i < key_list.size(); i++) {
+            int first_key = key_list.get(i);
+            for (int j = i+1; j < key_list.size(); j++) {
+                int second_key = key_list.get(j);
 
-
-
-        this.full_Divisor_List.put(key, Word);
+                this.full_Divisor_List.put(first_key*second_key, this.divisor_Word_List.get(first_key)+this.delimiter+this.divisor_Word_List.get(second_key));
+            }
+        }
     }
     public void setDivisor_Word(int key, String new_Word) {
         // check for out of bounds keys and invalid words
@@ -102,7 +118,7 @@ I was here about to generate the multiplier divisor_Word_List
             throw new ArrayIndexOutOfBoundsException();
         }
         if(this.divisor_Word_List.containsKey(key)){
-            this.divisor_Word_List.replace(key, new_Word);
+            this.replace_Divisor_Word(key, new_Word);
         }
         else{
             if(this.divisor_Word_List.size() < this.max_Length_Divisor_Word_List){
@@ -118,17 +134,15 @@ I was here about to generate the multiplier divisor_Word_List
         return this.divisor_Word_List.get(key);
     }
     public void remove_Divisor_Word(int key){
-        if(this.divisor_Word_List.containsKey(key)){
-int iiii = 1/0;
-// update the multiplier list
+        if(this.divisor_Word_List.containsKey(key)) {
             this.divisor_Word_List.remove(key);
+            this.generate_Divisor_list(); // update the multiplier list
         }
     }
     public void replace_Divisor_Word(int key, String new_Word) {
         if(this.divisor_Word_List.containsKey(key)){
-int iiii = 1/0;
-// update the multiplier list
             this.divisor_Word_List.replace(key, new_Word);
+            this.generate_Divisor_list(); // update the multiplier list
         }
     }
     public void setInclude_Word(int key, String new_Word) {
@@ -167,25 +181,46 @@ int iiii = 1/0;
     }
 
     public String evaluate(int inputNumber) {
-        if (inputNumber < this.min_Divisor_Word_Key) {
-            return String.valueOf(inputNumber);
-        }
-        String inputString = String.valueOf(inputNumber);
-        String returnStr = String.valueOf(inputNumber);
-        // get a sorted LIST of the divisors to use for matching
+        String returnStr ="";
 
-        for(int i : this.divisor_Word_List.keySet()) {
-            System.out.println("Divisor is : " + i);
-            if (0 < i) {
-                if (0 == (inputNumber % i)) {
-                    returnStr += this.delimiter + divisor_Word_List.get(i);
-                    delimiter = "-";
+        if(this.output_On_Division) {
+            // got through the full divisor list in reverse order.
+            // stop on first match.
+            ArrayList<Integer> keys = new ArrayList<>(this.getFull_Divisor_List().keySet());
+            for (int i = keys.size() - 1; i >= 0; i--) {
+                int divisor = keys.get(i);
+                if (0 == (inputNumber % divisor)) {
+                    returnStr = this.getFull_Divisor_List().get(keys.get(i));
+                    break;
                 }
             }
-            if (1 > returnStr.length()) returnStr = String.valueOf(inputNumber);
-            return returnStr;
         }
-        return "";
+        if(this.output_On_Include) {
+            if (inputNumber < this.min_Include_Word_Key) {
+                if (1 > returnStr.length()) {
+                    returnStr = String.valueOf(inputNumber);
+                }
+            }
+            else {
+                String inputString = String.valueOf(inputNumber);
+                String delimiter = this.delimiter;
+                if (1 > returnStr.length()) {
+                    delimiter = "";
+                }
+                for (int i : this.include_Word_List.keySet()) {
+                    String sdfsfd = this.include_Word_List.get(i);
+                    int sfd =inputString.indexOf(String.valueOf(i));
+                    if (inputString.contains(String.valueOf(i))) {
+                        returnStr = returnStr + delimiter +this.include_Word_List.get(i);
+                        delimiter = this.delimiter;
+                    }
+                }
+            }
+        }
+        if (1 > returnStr.length()) {
+            returnStr = String.valueOf(inputNumber);
+        }
+        return returnStr;
     }
 }
 
