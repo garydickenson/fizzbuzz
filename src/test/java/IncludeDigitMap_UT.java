@@ -1,3 +1,4 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Test;
 
 import java.util.TreeMap;
@@ -16,7 +17,7 @@ public class IncludeDigitMap_UT {
 //    @Test(expected =Exception.class) public void testTrueShouldFailForFalse() {assertTrue(false); }
 
     @Test
-    public void able_To_Create_Default(){
+    public void ableToCreateDefault(){
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
             System.out.println(map.toString());
@@ -26,7 +27,7 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Create_Builder(){
+    public void ableToCreateBuilder(){
         int max_Size = IncludeDigitMap.getAbsoluteMaxSize();
         int min_Key = IncludeDigitMap.getAbsoluteMinKey();
         int max_Key = IncludeDigitMap.getAbsoluteMaxKey();
@@ -34,208 +35,152 @@ public class IncludeDigitMap_UT {
         int min_Word_Length = IncludeDigitMap.getAbsoluteMinWordLength();
         int max_Word_Length = IncludeDigitMap.getAbsoluteMaxWordLength();
         try{
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Size(max_Size).min_Key(min_Key).max_Key(max_Key).delimiter(delimiter).min_Word_Length(min_Word_Length).max_Word_Length(max_Word_Length).build();
+            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().maxSize(max_Size).keys(min_Key, max_Key).delimiter(delimiter).wordLength(min_Word_Length, max_Word_Length).build();
             System.out.println(map.toString());
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    @Test
-    public void can_not_Create_invalid_size(){
-        int max_Size = -1;
-        Boolean success = Boolean.FALSE; //expect it to fail
+    private Boolean evaluateCreateSize(int size){
+        Boolean result = Boolean.FALSE; //expect it to fail
         try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Size(max_Size).build();
+            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().maxSize(size).build();
             System.out.println(map.toString());
         }
         catch (IncludeDigitMapException e) {
+            //This is Not good, the builder should catch the error for the class gets the values
+            result = Boolean.FALSE;
+        }
+        catch (IllegalStateException e) {
             //This is good, correct behavior
-            success = Boolean.TRUE;
+            result = Boolean.TRUE;
         }
-        assertTrue(success);
-
-        max_Size = 0;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Size(max_Size).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-
-        max_Size = IncludeDigitMap.getAbsoluteMaxSize()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Size(max_Size).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        return result;
 
     }
-
     @Test
-    public void can_not_Create_invalid_min_Key(){
-        int min_Key = IncludeDigitMap.getAbsoluteMinKey()-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().min_Key(min_Key).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+    public void canNotCreateInvalidSize(){
+        int size = IncludeDigitMap.getAbsoluteMinSize()-1;
+        assertTrue(evaluateCreateSize(size));
 
-        min_Key = IncludeDigitMap.getAbsoluteMaxKey()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().min_Key(min_Key).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        size = IncludeDigitMap.getAbsoluteMaxSize()+1;
+        assertTrue(evaluateCreateSize(size));
     }
 
+    private Boolean evaluateCreatekeys(int min, int max){
+        Boolean result = Boolean.FALSE; //expect it to fail
+        try {
+            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().keys(min, max).build();
+            System.out.println(map.toString());
+        }
+        catch (IncludeDigitMapException e) {
+            //This is Not good, the builder should catch the error for the class gets the values
+            result = Boolean.FALSE;
+        }
+        catch (IllegalStateException e) {
+            //This is good, correct behavior
+            result = Boolean.TRUE;
+        }
+        return result;
+    }
     @Test
-    public void can_not_Create_invalid_max_Key(){
-        int max_Key = IncludeDigitMap.getAbsoluteMinKey()-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Key(max_Key).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+    public void can_not_Create_Invalid_Keys(){
+        int minKey = IncludeDigitMap.getAbsoluteMinKey()-1; // min too small
+        int maxKey = IncludeDigitMap.getAbsoluteMaxKey();
+        assertTrue(evaluateCreatekeys(minKey, maxKey));
 
-        max_Key = IncludeDigitMap.getAbsoluteMaxKey()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Key(max_Key).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        minKey = IncludeDigitMap.getAbsoluteMaxKey()+1; // min too big
+        maxKey = IncludeDigitMap.getAbsoluteMaxKey();
+        assertTrue(evaluateCreatekeys(minKey, maxKey));
+
+        minKey = IncludeDigitMap.getAbsoluteMinKey();
+        maxKey = IncludeDigitMap.getAbsoluteMinKey()-1; // max too small
+        assertTrue(evaluateCreatekeys(minKey, maxKey));
+
+        minKey = IncludeDigitMap.getAbsoluteMinKey();
+        maxKey = IncludeDigitMap.getAbsoluteMaxKey()+1; // max too big
+        assertTrue(evaluateCreatekeys(minKey, maxKey));
+
+        minKey = IncludeDigitMap.getAbsoluteMaxKey(); // min > max
+        maxKey = IncludeDigitMap.getAbsoluteMinKey();
+        assertTrue(evaluateCreatekeys(minKey, maxKey));
     }
 
-    @Test
-    public void can_not_Create_invalid_Delimiter(){
-        String delimiter = null;
-        Boolean success = Boolean.FALSE; //expect it to fail
+    private Boolean evaluateCreateDelimiter(String delimiter){
+        Boolean result = Boolean.FALSE; //expect it to fail
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().delimiter(delimiter).build();
             System.out.println(map.toString());
         }
         catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
+            result = Boolean.FALSE; //This is Not good, the builder should catch the error for the class gets the values
         }
-        assertTrue(success);
+        catch (IllegalStateException e) {
+            result = Boolean.TRUE; //This is good, correct behavior
+        }
+        return result;
+    }
+    @Test
+    public void canNotCreateInvalidDelimiter(){
+        String delimiter = null;
+        assertTrue(evaluateCreateDelimiter(delimiter));
+
+        delimiter = "";
+        assertTrue(evaluateCreateDelimiter(delimiter));
 
         delimiter = "";
         for (int i = 0; i < IncludeDigitMap.getAbsoluteMinDelimiterLength()-1; i++) {
             delimiter += ".";
         }
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().delimiter(delimiter).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        assertTrue(evaluateCreateDelimiter(delimiter));
 
         delimiter = "";
         for (int i = 0; i <= IncludeDigitMap.getAbsoluteMaxDelimiterLength()+1; i++) {
             delimiter += ".";
         }
-        success = Boolean.FALSE; //expect it to fail
+        assertTrue(evaluateCreateDelimiter(delimiter));
+    }
+
+    private Boolean evaluateCreateWordLength(int min, int max){
+        Boolean result = Boolean.FALSE; //expect it to fail
         try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().delimiter(delimiter).build();
+            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().wordLength(min, max).build();
             System.out.println(map.toString());
         }
         catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
+            result = Boolean.FALSE; //This is Not good, the builder should catch the error for the class gets the values
         }
-        assertTrue(success);
+        catch (IllegalStateException e) {
+            result = Boolean.TRUE; //This is good, correct behavior
+        }
+        return result;
+    }
+    @Test
+    public void canNotCreateInvalidWordLength(){
+        int min = IncludeDigitMap.getAbsoluteMinWordLength()-1; // min too small
+        int max = IncludeDigitMap.getAbsoluteMaxWordLength();
+        assertTrue(evaluateCreateWordLength(min, max));
+
+        min = IncludeDigitMap.getAbsoluteMaxWordLength()+1; // min too big
+        assertTrue(evaluateCreateWordLength(min, max));
+
+        min = IncludeDigitMap.getAbsoluteMinWordLength();
+        max = IncludeDigitMap.getAbsoluteMinWordLength()-1; // max too small
+        assertTrue(evaluateCreateWordLength(min, max));
+
+        min = IncludeDigitMap.getAbsoluteMinWordLength();
+        max = IncludeDigitMap.getAbsoluteMaxWordLength()+1; // max too big
+        assertTrue(evaluateCreateWordLength(min, max));
+
+        min = IncludeDigitMap.getAbsoluteMaxWordLength(); // min > max
+        max = IncludeDigitMap.getAbsoluteMinWordLength(); // this assumes that AbsMin and AbsMax are not the same value
+        assertTrue(evaluateCreateWordLength(min, max));
+
     }
 
     @Test
-    public void can_not_Create_invalid_min_Word_Length(){
-        int min_Word_Length = IncludeDigitMap.getAbsoluteMinWordLength()-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().min_Word_Length(min_Word_Length).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-
-        min_Word_Length = IncludeDigitMap.getAbsoluteMaxWordLength()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().min_Word_Length(min_Word_Length).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-    }
-
-    @Test
-    public void can_not_Create_invalid_max_Word_Length(){
-        int max_Word_Length = IncludeDigitMap.getAbsoluteMinWordLength()-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Word_Length(max_Word_Length).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-
-        max_Word_Length = IncludeDigitMap.getAbsoluteMaxWordLength()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().max_Word_Length(max_Word_Length).build();
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-    }
-
-    @Test
-    public void able_To_Set_Valid_size() {
+    public void ableToSetValidSize() {
         int max_Size = 1;
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
@@ -250,17 +195,15 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Set_Valid_Min_Key(){
+    public void ableToSetValidMinKey(){
         int min_Key = IncludeDigitMap.getAbsoluteMinKey();
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
             map.setMin_Key(min_Key);
-            int sfds = map.getMinKey();
             assertTrue(map.getMinKey() == min_Key);
 
             min_Key = IncludeDigitMap.getAbsoluteMaxKey();
             map.setMin_Key(min_Key);
-            sfds = map.getMinKey();
             assertTrue(map.getMinKey() == min_Key);
         } catch (IncludeDigitMapException IncludeDigitMapException) {
             IncludeDigitMapException.printStackTrace();
@@ -268,7 +211,7 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Set_Valid_Max_Key(){
+    public void ableToSetValidMaxKey(){
         int max_Key = IncludeDigitMap.getAbsoluteMinKey();
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
@@ -284,7 +227,7 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Set_Valid_Delimiter(){
+    public void ableToSetValidDelimiter(){
         String delimiter = "*";
         IncludeDigitMap map = null;
         try {
@@ -299,7 +242,7 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Set_Valid_min_Word_Length(){
+    public void ableToSetValidMinWordLength(){
         int min_Word_Length = IncludeDigitMap.getAbsoluteMinWordLength();
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
@@ -315,7 +258,7 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Set_Valid_max_Word_Length(){
+    public void ableToSetValidMaxWordLength(){
         int max_Word_Length = IncludeDigitMap.getAbsoluteMinWordLength();
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
@@ -330,228 +273,155 @@ public class IncludeDigitMap_UT {
         }
     }
 
-    @Test
-    public void can_not_Set_invalid_size(){
-        int max_Size=-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
+    private Boolean evaluateSetSize(int size){
+        Boolean result = Boolean.FALSE; //expect it to fail
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMaxSize(max_Size);
+            map.setMaxSize(size);
             System.out.println(map.toString());
         }
         catch (IncludeDigitMapException e) {
             //This is good, correct behavior
-            success = Boolean.TRUE;
+            result = Boolean.TRUE;
         }
-        assertTrue(success);
-
-        max_Size = 0;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMaxSize(max_Size);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-
-        max_Size = IncludeDigitMap.getAbsoluteMaxSize()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMaxSize(max_Size);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-
+        return result;
     }
 
     @Test
-    public void can_not_Set_invalid_min_Key(){
-        int min_Key = -1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMin_Key(min_Key);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+    public void canNotSetInvalidSize(){
+        int size = IncludeDigitMap.getAbsoluteMinSize()-1; // too small
+        assertTrue(evaluateSetSize(size));
 
-        min_Key = IncludeDigitMap.getAbsoluteMinKey()-1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMin_Key(min_Key);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        size = IncludeDigitMap.getAbsoluteMaxSize()+1; // too big
+        assertTrue(evaluateSetSize(size));
 
-        min_Key = IncludeDigitMap.getAbsoluteMaxKey()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMin_Key(min_Key);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
     }
 
+    private Boolean evaluateSetInvalidMinKey(int key){
+        Boolean result = Boolean.FALSE; //expect it to fail
+        try {
+            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
+            map.setMin_Key(key);
+            System.out.println(map.toString());
+        }
+        catch (IncludeDigitMapException e) {
+            //This is good, correct behavior
+            result = Boolean.TRUE;
+        }
+        return result;
+    }
     @Test
-    public void can_not_Set_invalid_max_Key(){
-        int max_Key=IncludeDigitMap.getAbsoluteMinKey()-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMax_Key(max_Key);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+    public void canNotSetInvalidMinKey(){
+        int key = IncludeDigitMap.getAbsoluteMinKey()-1; // too small
+        assertTrue(evaluateSetInvalidMinKey(key));
 
-        max_Key = IncludeDigitMap.getAbsoluteMaxKey()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMax_Key(max_Key);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        key = IncludeDigitMap.getAbsoluteMaxKey()+1; // too big
+        assertTrue(evaluateSetInvalidMinKey(key));
     }
 
+    private Boolean evaluateSetInvalidMaxKey(int key){
+        Boolean result = Boolean.FALSE; //expect it to fail
+        try {
+            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
+            map.setMax_Key(key);
+            System.out.println(map.toString());
+        }
+        catch (IncludeDigitMapException e) {
+            //This is good, correct behavior
+            result = Boolean.TRUE;
+        }
+        return result;
+    }
     @Test
-    public void can_not_Set_invalid_Delimiter(){
+    public void canNotSetInvalidMaxKey(){
+        int key = IncludeDigitMap.getAbsoluteMinKey()-1; // too small
+        assertTrue(evaluateSetInvalidMaxKey(key));
+
+        key = IncludeDigitMap.getAbsoluteMaxKey()+1; // too big
+        assertTrue(evaluateSetInvalidMaxKey(key));
+    }
+
+    private Boolean evaluateSetInvalidDelimiter(IncludeDigitMap map, String delimiter){
+        Boolean  result = Boolean.FALSE; //expect it to fail
+        try {
+            map.setDelimiter(delimiter);
+        }
+        catch (IncludeDigitMapException e) {
+            //This is good, correct behavior
+            result = Boolean.TRUE;
+        }
+        return result;
+    }
+    @Test
+    public void canNotSetInvalidDelimiter(){
+        IncludeDigitMap map = null;
+        try {
+            map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
+        }
+        catch (IncludeDigitMapException e) {
+            // got some error creating a new object
+            assertTrue(Boolean.FALSE);
+        }
         String delimiter = null;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setDelimiter(delimiter);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        assertTrue(evaluateSetInvalidDelimiter(map, delimiter));
 
         delimiter = "";
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            for (int i = 0; i < map.getMinDelimiterLength()-1; i++) {
-                delimiter += i;
-            }
-            map.setDelimiter(delimiter);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        assertTrue(evaluateSetInvalidDelimiter(map, delimiter));
 
         delimiter = "";
-        success = Boolean.FALSE; //expect it to fail
+        // set to the max size defined in this instance
+        for (int i = 0; i <= map.getMaxDelimiterLength()+1; i++) {
+            delimiter += ".";
+        }
+        assertTrue(evaluateSetInvalidDelimiter(map, delimiter));
+
+    }
+
+    private Boolean evaluateSetInvalidMinWordLength(int size){
+        Boolean result = Boolean.FALSE; //expect it to fail
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            for (int i = 0; i <= map.getMaxDelimiterLength(); i++) {
-                delimiter += ".";
-            }
-            map.setDelimiter(delimiter);
+            map.setMin_Word_Length(size);
+            System.out.println(map.toString());
+        }
+        catch (IncludeDigitMapException e) {
+            result = Boolean.TRUE; //This is good, correct behavior
+        }
+        return result;
+    }
+    @Test
+    public void canNotSetInvalidMinWordLength(){
+        int size = IncludeDigitMap.getAbsoluteMinWordLength()-1;  // too small
+        assertTrue(evaluateSetInvalidMinWordLength(size));
+
+        size = IncludeDigitMap.getAbsoluteMaxWordLength()+1; // too big
+        assertTrue(evaluateSetInvalidMinWordLength(size));
+    }
+
+    private Boolean evaluateSetInvalidMaxWordLength(int size) {
+        Boolean result = Boolean.FALSE; //expect it to fail
+        try {
+            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
+            map.setMax_Word_Length(size);
             System.out.println(map.toString());
         }
         catch (IncludeDigitMapException e) {
             //This is good, correct behavior
-            success = Boolean.TRUE;
+            result = Boolean.TRUE;
         }
-        assertTrue(success);
+        return result;
+    }
+    @Test
+    public void canNotSetInvalidMaxWordLength(){
+        int size = IncludeDigitMap.getAbsoluteMinWordLength()-1; // too small
+        assertTrue(evaluateSetInvalidMaxWordLength(size));
+
+        size = IncludeDigitMap.getAbsoluteMaxWordLength()+1; // too big
+        assertTrue(evaluateSetInvalidMaxWordLength(size));
     }
 
     @Test
-    public void can_not_Set_invalid_min_Word_Length(){
-        int min_Word_Length = IncludeDigitMap.getAbsoluteMinWordLength()-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMin_Word_Length(min_Word_Length);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-
-        min_Word_Length = IncludeDigitMap.getAbsoluteMaxWordLength()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMin_Word_Length(min_Word_Length);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-    }
-
-    @Test
-    public void can_not_Set_invalid_max_Word_Length(){
-        int max_Word_Length = IncludeDigitMap.getAbsoluteMinWordLength()-1;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMax_Word_Length(max_Word_Length);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-
-        max_Word_Length = IncludeDigitMap.getAbsoluteMaxWordLength()+1;
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-            map.setMax_Word_Length(max_Word_Length);
-            System.out.println(map.toString());
-        }
-        catch (IncludeDigitMapException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-    }
-
-    @Test
-    public void able_to_add_Word() {
+    public void ableToAddWord() {
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
             int key = map.getMinKey();
@@ -568,12 +438,13 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Replace_List_With_TreeMap() {
+    public void ableToReplaceListWithTreeMap() {
         IncludeDigitMap map = null;
         try {
             map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
         } catch (IncludeDigitMapException IncludeDigitMapException) {
             IncludeDigitMapException.printStackTrace();
+            assertTrue(Boolean.FALSE);
         }
         try{
             String Word = "";
@@ -594,95 +465,53 @@ public class IncludeDigitMap_UT {
         }
     }
 
+    private Boolean evaluateAddInvalidKeyOrWord(IncludeDigitMap map, int key, String Word){
+        Boolean result = Boolean.FALSE; //expect it to fail
+        try {
+            map.put(key, Word);
+        } catch (ClassCastException e) {
+            result = Boolean.TRUE; //This is good, correct behavior
+        }
+        return result;
+    }
     @Test
-    public void can_not_add_Invalid_key() {
+    public void canNotAddInvalidKeyOrWord() {
         int key = -1;
         IncludeDigitMap map = null;
-        Boolean success = Boolean.FALSE; //expect it to fail
         try {
             map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
         } catch(IncludeDigitMapException e){
             assertTrue(Boolean.FALSE);
         }
-        try {
-            key = map.getMinKey() - 1;
-            String Word = "";
-            for (int i = map.getMinWordLength(); i < map.getMaxWordLength(); i++) {
-                Word += ":";
-            }
-            map.put(key, Word);
-        } catch (ClassCastException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
 
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-        } catch(IncludeDigitMapException e){
-            assertTrue(Boolean.FALSE);
+        String Word = "";
+        for (int i = map.getMinWordLength(); i < map.getMaxWordLength(); i++) {
+            Word += ":";
         }
-        try {
-            key = map.getMaxKey() + 1;
-            String Word = "";
-            for (int i = map.getMinWordLength(); i < map.getMaxWordLength(); i++) {
-                Word += ":";
-            }
-            map.put(key, Word);
-        } catch (ClassCastException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
-    }
 
+        key = map.getMinKey() - 1;
+        assertTrue(evaluateAddInvalidKeyOrWord(map, key, Word));  // Key too small , valid Word
 
-    @Test
-    public void can_not_add_Invalid_Word() {
-        int key = -1;
-        IncludeDigitMap map = null;
-        Boolean success = Boolean.FALSE; //expect it to fail
-        try {
-            map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-        } catch (IncludeDigitMapException e) {
-            assertTrue(Boolean.FALSE);
-        }
-        try{
-            key = map.getMinKey();
-            String Word = "";
-            for (int i = 0; i < map.getMinWordLength()-1; i++) {
-                Word += ":";
-            }
-            map.put(key, Word);
-        } catch (ClassCastException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
-        }
-        assertTrue(success);
+        key = map.getMaxKey() + 1;
+        assertTrue(evaluateAddInvalidKeyOrWord(map, key, Word));  // Key too big, valid Word
 
-        success = Boolean.FALSE; //expect it to fail
-        try {
-            map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
-        } catch (IncludeDigitMapException e) {
-            assertTrue(Boolean.FALSE);
+        key = map.getMinKey();
+        Word = "";
+        for (int i = 0; i < map.getMinWordLength()-1; i++) {
+            Word += ":";
         }
-        try{
-            key = map.getMinKey();
-            String Word = "";
-            for (int i = 0; i < map.getMaxWordLength()+1; i++) {
-                Word += ":";
-            }
-            map.put(key, Word);
-        } catch (ClassCastException e) {
-            //This is good, correct behavior
-            success = Boolean.TRUE;
+        assertTrue(evaluateAddInvalidKeyOrWord(map, key, Word)); // valid Key, Word too small
+
+        key = map.getMinKey();
+        Word = "";
+        for (int i = 0; i < map.getMaxWordLength()+1; i++) {
+            Word += ":";
         }
-        assertTrue(success);
+        assertTrue(evaluateAddInvalidKeyOrWord(map, key, Word)); // valid Key, Word too big
     }
 
     @Test
-    public void able_To_Remove_Word(){
+    public void ableToRemoveWord(){
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
             TreeMap<Integer, String> Word_List = map.getMap();
@@ -699,7 +528,7 @@ public class IncludeDigitMap_UT {
     }
 
     @Test
-    public void able_To_Get_Available_Space(){
+    public void ableToGetAvailableSpace(){
         try {
             IncludeDigitMap map = new IncludeDigitMap.IncludeDigitMapBuilder().build();
             map.clear();

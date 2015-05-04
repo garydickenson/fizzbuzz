@@ -1,6 +1,16 @@
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.TreeMap;
+import java.util.regex.Matcher;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -8,9 +18,35 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by Gary Dickenson on 4/7/2015.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class FizzBuzz_UT {
 //    @Test public void testTrue() { assertTrue(true); }
 //    @Test(expected =Exception.class) public void testTrueShouldFailForFalse() {assertTrue(false); }
+
+
+/* this sets up a mock Include Digit Map that the fizzBuzz object will use.
+   To get the code with out the Mock you an create local valiables ro comment out the mock definitions.
+     */
+    @Mock
+    private IncludeDigitMap includeDigitMap;
+
+    @InjectMocks
+    FizzBuzz fizzBuzz = new FizzBuzz();
+
+    @Before
+    public void setUp() throws Exception {
+
+        Mockito.when(includeDigitMap.getDelimiter()).thenReturn("!");  // this overrides the behaviour of the actual class
+
+    }
+
+    @Test
+    public void testwhateverYouWantToNameIt() throws Exception {
+        //FizzBuzz fizzBuzz = new FizzBuzz();  // local variable to override the UT_test_class FizzBuzz instance so the real class can be tested.
+        String delimiter = fizzBuzz.getIncludeWordDelimiter();
+        Assert.assertThat(delimiter, CoreMatchers.is("!"));
+
+    }
 
     public Boolean compare_TreeMaps(TreeMap<Integer, String> hm1, TreeMap<Integer, String> hm2){
         if(hm1.size() != hm2.size()) {
@@ -76,6 +112,7 @@ public class FizzBuzz_UT {
         TreeMap<Integer, String> divisor_Word_List = new TreeMap<>();
         divisor_Word_List.put(5, "Buzz");
         divisor_Word_List.put(3, "Fizz");
+        int fix_me = 1/0;
 //Test that it gets sorted
 //TreeMap<Integer, String> treeMap = new TreeMap<Integer, String>(divisor_Word_List);
         fizzBuzz.setDivisor_Word_List(divisor_Word_List);
@@ -117,6 +154,7 @@ public class FizzBuzz_UT {
 
     }
     @Test public void able_To_Get_Divisor_Word(){
+        int fix_me = 1/0; // should not relay on hardcoded keys
         FizzBuzz fizzBuzz = new FizzBuzz();
         assertTrue(fizzBuzz.getDivisor_Word(5).equals("Buzz"));
     }
@@ -149,8 +187,22 @@ public class FizzBuzz_UT {
     @Test public void able_To_Replace_Divisor_Word_List(){
         FizzBuzz fizzBuzz = new FizzBuzz();
         TreeMap<Integer, String> Word_List = new TreeMap<>();
-        for (int j = 0; j < fizzBuzz.getMax_Length_Divisor_Word_List()+5; j++) {
+
+        for (int j = IncludeDigitMap.getAbsoluteMaxWordLength(); j < fizzBuzz.getMax_Length_Divisor_Word_List(); j++) {
             Word_List.put(j + fizzBuzz.getMin_Divisor_Word_key(), "Buzz2");
+            if(Word_List.size() <= fizzBuzz.getMax_Length_Divisor_Word_List()) {
+                fizzBuzz.setDivisor_Word_List(Word_List);
+                assertTrue(this.compare_TreeMaps(Word_List, fizzBuzz.getDivisor_Word_List()));
+            }
+        }
+    }
+
+    @Test public void not_able_To_Replace_With_Invalid_Divisor_Word_List(){
+
+
+        int fix_me = 1/0;
+        /*
+        code moved from set valid word list test
             if(Word_List.size() <= fizzBuzz.getMax_Length_Divisor_Word_List()) {
                 fizzBuzz.setDivisor_Word_List(Word_List);
                 assertTrue(this.compare_TreeMaps(Word_List, fizzBuzz.getDivisor_Word_List()));
@@ -167,10 +219,8 @@ public class FizzBuzz_UT {
                 }
                 assertTrue(success);
             }
-        }
-    }
+        */
 
-    @Test public void not_able_To_Replace_With_Invalid_Divisor_Word_List(){
         FizzBuzz fizzBuzz = new FizzBuzz();
         TreeMap<Integer, String> Word_List = new TreeMap<>();
         Word_List.put(fizzBuzz.getMin_Divisor_Word_key()-1, "Invalid");

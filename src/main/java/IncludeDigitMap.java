@@ -14,8 +14,10 @@ in particular needed functionality is :
     report space left in Map
 
 */
+
 public class IncludeDigitMap  extends TreeMap<Integer, String> {
     private static int absolute_Max_Size = 10;
+    private static int absolute_Min_Size = 0;
     private static int absolute_Min_Key = 0;
     private static int absolute_Max_Key = 9;
     private static int absolute_Min_Delimiter_Length = 1;
@@ -34,6 +36,7 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
     private int max_Key;
 
     public static int getAbsoluteMaxSize() {return absolute_Max_Size;}
+    public static int getAbsoluteMinSize() {return absolute_Min_Size;}
     public static int getAbsoluteMinKey() {return absolute_Min_Key;}
     public static int getAbsoluteMaxKey() {return absolute_Max_Key;}
 
@@ -223,17 +226,28 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
         public IncludeDigitMapBuilder() {
             // nothing to do
         }
-        public IncludeDigitMapBuilder maxSize(int max_Size) {
-            // need constraints on all methods
-            this.max_Size = max_Size;
+        public IncludeDigitMapBuilder maxSize(int size) {
+            if(IncludeDigitMap.getAbsoluteMinSize()>size) {
+                throw new IllegalStateException("ERROR: Maximum Size can not be smaller then "+IncludeDigitMap.getAbsoluteMinSize());
+            }
+            if(IncludeDigitMap.getAbsoluteMaxSize()<size) {
+                throw new IllegalStateException("ERROR: Maximum Size can not be larger then "+IncludeDigitMap.getAbsoluteMaxSize());
+            }
+            this.max_Size = size;
             return this;
         }
         public IncludeDigitMapBuilder keys(int min, int max) {
             if(IncludeDigitMap.getAbsoluteMinKey() > min ) {
-                throw new IllegalStateException("ERROR: Minimum key can not be smaller then "+this.min_Key);
+                throw new IllegalStateException("ERROR: Minimum key can not be smaller then "+IncludeDigitMap.getAbsoluteMinKey());
+            }
+            if(IncludeDigitMap.getAbsoluteMaxKey() < min ) {
+                throw new IllegalStateException("ERROR: Minimum key can not be greater then "+IncludeDigitMap.getAbsoluteMaxKey());
             }
             if(IncludeDigitMap.getAbsoluteMaxKey() < max) {
-                throw new IllegalStateException("ERROR: Maximum key can not be greater then "+this.max_Key);
+                throw new IllegalStateException("ERROR: Maximum key can not be greater then "+IncludeDigitMap.getAbsoluteMaxKey());
+            }
+            if(IncludeDigitMap.getAbsoluteMinKey() > max) {
+                throw new IllegalStateException("ERROR: Maximum key can not be smaller then "+IncludeDigitMap.getAbsoluteMinKey());
             }
             if(min > max) {
                 throw new IllegalStateException("ERROR: Minimum key can not be greater then Maximum key");
@@ -243,7 +257,7 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
             return this;
         }
         public IncludeDigitMapBuilder delimiter(String delimiter) {
-            if(noll == delimiter){
+            if(null == delimiter){
                 throw new IllegalStateException("ERROR: Delimiter can not be NULL ");
             }
             if(this.min_Delimiter_Length > delimiter.length()){
