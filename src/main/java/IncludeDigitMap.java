@@ -1,10 +1,4 @@
-import org.omg.PortableInterceptor.INACTIVE;
-
 import java.util.TreeMap;
-
-/**
- * Created by GDICK on 4/18/2015.
- */
 
 /*
 SubClass TreeMap to provide the unique behaviour needed for the FizzBuzz project
@@ -14,7 +8,7 @@ in particular needed functionality is :
     report space left in Map
 
 */
-public class IncludeDigitMap  extends TreeMap<Integer, String> {
+public class IncludeDigitMap  extends TreeMap<Integer, String> implements Cloneable {
     private static int absolute_Max_Size = 10;
     private static int absolute_Min_Key = 0;
     private static int absolute_Max_Key = 9;
@@ -22,7 +16,7 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
     private static int absolute_Max_Delimiter_Length = 3;
     private static int absolute_Min_Word_Length = 1;
     private static int absolute_Max_Word_Length = 11;
-    private static String defaultDelimiter = "-";
+    private final static String DEFAULT_DELIMITER = "-";
 
     private String delimiter = "-";
     private int min_Delimiter_Length;
@@ -41,7 +35,7 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
     public static int getAbsoluteMaxDelimiterLength() {return absolute_Max_Delimiter_Length;}
     public static int getAbsoluteMinWordLength() {return absolute_Min_Word_Length;}
     public static int getAbsoluteMaxWordLength() {return absolute_Max_Word_Length;}
-    public static String getDefaultDelimiter() {return defaultDelimiter;}
+    public static String getDefaultDelimiter() {return DEFAULT_DELIMITER;}
 
     public int getMaxSize() {return this.max_Size;}
     public int getMinKey() {return this.min_Key;}
@@ -150,16 +144,16 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
 
 
     public Boolean compare(IncludeDigitMap hm1){
-        return this.compare(this, hm1);
+        return IncludeDigitMap.compare(this, hm1);
     }
     public Boolean compare(TreeMap<Integer, String>  hm1){
-        return this.compare(this, hm1);
+        return IncludeDigitMap.compare(this, hm1);
     }
     public static Boolean compare(IncludeDigitMap hm1, IncludeDigitMap hm2){
         if(hm1.getMaxSize() != hm2.getMaxSize()) { return Boolean.FALSE;}
         if(hm1.getMinKey() != hm2.getMinKey()) { return Boolean.FALSE;}
         if(hm1.getMaxKey() != hm2.getMaxKey()) { return Boolean.FALSE;}
-        if(hm1.getDelimiter() != hm2.getDelimiter()) { return Boolean.FALSE;}
+        if(!hm1.getDelimiter().equals(hm2.getDelimiter())) { return Boolean.FALSE;}
         if(hm1.getMinDelimiterLength() != hm2.getMinDelimiterLength()) { return Boolean.FALSE;}
         if(hm1.getMaxDelimiterLength() != hm2.getMaxDelimiterLength()) { return Boolean.FALSE;}
         if(hm1.getMinWordLength() != hm2.getMinWordLength()) { return Boolean.FALSE;}
@@ -223,27 +217,8 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
         public IncludeDigitMapBuilder() {
             // nothing to do
         }
-        public IncludeDigitMapBuilder maxSize(int max_Size) {
-            // need constraints on all methods
-            this.max_Size = max_Size;
-            return this;
-        }
-        public IncludeDigitMapBuilder keys(int min, int max) {
-            if(IncludeDigitMap.getAbsoluteMinKey() > min ) {
-                throw new IllegalStateException("ERROR: Minimum key can not be smaller then "+this.min_Key);
-            }
-            if(IncludeDigitMap.getAbsoluteMaxKey() < max) {
-                throw new IllegalStateException("ERROR: Maximum key can not be greater then "+this.max_Key);
-            }
-            if(min > max) {
-                throw new IllegalStateException("ERROR: Minimum key can not be greater then Maximum key");
-            }
-            this.min_Key = min;
-            this.max_Key = max;
-            return this;
-        }
         public IncludeDigitMapBuilder delimiter(String delimiter) {
-            if(noll == delimiter){
+            if(null == delimiter){
                 throw new IllegalStateException("ERROR: Delimiter can not be NULL ");
             }
             if(this.min_Delimiter_Length > delimiter.length()){
@@ -253,36 +228,6 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
                 throw new IllegalStateException("ERROR: Delimiter can not be longer then " + this.max_Delimiter_Length);
             }
             this.delimiter = delimiter;
-            return this;
-        }
-        public IncludeDigitMapBuilder wordLength(int min,int max) {
-            if(IncludeDigitMap.getAbsoluteMinWordLength() > min ) {
-                throw new IllegalStateException("ERROR: Minimum Word length can not be smaller then "+this.min_Word_Length);
-            }
-            if(IncludeDigitMap.getAbsoluteMaxWordLength() < max) {
-                throw new IllegalStateException("ERROR: Maximum Word length can not be greater then "+this.max_Word_Length);
-            }
-            if(min > max) {
-                throw new IllegalStateException("ERROR: Minimum Word length can not be greater then Maximum Word length");
-            }
-
-            this.min_Word_Length = min;
-            this.max_Word_Length = max;
-            return this;
-        }
-        public IncludeDigitMapBuilder delimiterLength(int min,int max) {
-            if(IncludeDigitMap.getAbsoluteMinDelimiterLength() > min ) {
-                throw new IllegalStateException("ERROR: Minimum Delimiter length can not be smaller then "+IncludeDigitMap.getAbsoluteMinDelimiterLength());
-            }
-            if(IncludeDigitMap.getAbsoluteMaxDelimiterLength() < max) {
-                throw new IllegalStateException("ERROR: Maximum Delimiter length can not be greater then "+IncludeDigitMap.getAbsoluteMaxDelimiterLength());
-            }
-            if(min > max) {
-                throw new IllegalStateException("ERROR: Minimum Delimiter length can not be greater then Maximum Delimiter length");
-            }
-
-            this.min_Delimiter_Length = min;
-            this.max_Delimiter_Length = max;
             return this;
         }
         public IncludeDigitMap build() throws IncludeDigitMapException {
@@ -307,9 +252,10 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
     }
     @Override
     public Object clone() throws ClassCastException {
-        IncludeDigitMap clone = null;
+
+        IncludeDigitMap clone =  (IncludeDigitMap) super.clone();
         try {
-            clone = new IncludeDigitMap.IncludeDigitMapBuilder().build();
+//            clone = new IncludeDigitMap.IncludeDigitMapBuilder().build();
             clone.setDelimiter(this.getDelimiter());
             clone.setMin_Delimiter_Length(this.getMinDelimiterLength());
             clone.setMax_Delimiter_Length(this.getMaxDelimiterLength());
@@ -336,7 +282,6 @@ public class IncludeDigitMap  extends TreeMap<Integer, String> {
         if(this.getMinKey() > key) {
             throw new ClassCastException("Key value too low");
         }
-        int delete_me =this.getMaxKey();
         if(this.getMaxKey()  < key) {
             throw new ClassCastException("Key value too high");
         }
